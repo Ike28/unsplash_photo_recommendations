@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import 'env.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -21,17 +23,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _getImages() async {
-    const String accessKey = 'zK9UCH1xkpTIJkZZIyax9kUJlEzJRNovydBMR_ToFTY';
+    const String accessKey = UNSPLASH_API_KEY;
     const String query = 'audi';
     final Random rng = Random();
     const String count = '16';
     final String page = rng.nextInt(50).toString();
 
-    final Response response = await get(
-      Uri.parse(
-          'https://api.unsplash.com/search/photos?query=$query&client_id=$accessKey&per_page=$count&page=$page'
-      )
-    );
+    final Response response = await get(Uri.parse(
+        'https://api.unsplash.com/search/photos?query=$query&client_id=$accessKey&per_page=$count&page=$page'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -54,24 +53,15 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Photo recommendations'),
       ),
       body: _photos.isNotEmpty
-        ? GridView.builder(
-                itemCount: _photos.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return GridTile(
-                        child: Image.network(_photos[index],
-                        fit: BoxFit.cover
-                        )
-                  );
-                }
-            )
-        : const Center(
-            child: CircularProgressIndicator(
-              semanticsLabel: 'Loading photos...'
+          ? GridView.builder(
+              itemCount: _photos.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+              itemBuilder: (BuildContext context, int index) {
+                return GridTile(child: Image.network(_photos[index], fit: BoxFit.cover));
+              })
+          : const Center(
+              child: CircularProgressIndicator(semanticsLabel: 'Loading photos...'),
             ),
-      ),
     );
   }
 }
