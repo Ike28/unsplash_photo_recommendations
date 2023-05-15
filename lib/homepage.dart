@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
-
-import 'env.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _getImages() async {
-    const String accessKey = UNSPLASH_API_KEY;
+    final String accessKey = dotenv.env['UNSPLASH_API_KEY']!;
     const String query = 'audi';
     final Random rng = Random();
     const String count = '16';
