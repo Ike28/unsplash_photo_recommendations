@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     final String accessKey = dotenv.env['UNSPLASH_API_KEY']!;
     const String query = 'audi';
     final Random rng = Random();
-    const String count = '16';
+    const String count = '28';
     final String page = rng.nextInt(50).toString();
 
     final Response response = await client.get(Uri.parse(
@@ -56,10 +56,37 @@ class _HomePageState extends State<HomePage> {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
               itemBuilder: (BuildContext context, int index) {
                 final Picture picture = _photos[index];
-                return GridTile(
+                return Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      GridTile(
                         child: Image.network(
                           picture.urls.regular,
-                          fit: BoxFit.cover));
+                          fit: BoxFit.cover)
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.bottomEnd,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: AlignmentDirectional.bottomCenter,
+                              end: AlignmentDirectional.topCenter,
+                              colors: <Color>[
+                                Colors.black,
+                                Colors.transparent
+                              ]
+                            )
+                          ),
+                          child: ListTile(
+                            title: Text(picture.user.name),
+                            trailing: CircleAvatar(
+                              backgroundImage: NetworkImage(picture.user.profileImages.medium),
+                            ),
+                          ),
+                        )
+                      )
+                    ]
+                );
               })
           : const Center(
               child: CircularProgressIndicator(semanticsLabel: 'Loading photos...'),
