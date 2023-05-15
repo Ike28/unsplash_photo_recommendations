@@ -5,36 +5,34 @@ part 'picture.g.dart';
 
 @freezed
 class Picture with _$Picture {
-  const factory Picture({
-    required String id,
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-    @JsonKey(name: 'updated_at') DateTime? updatedAt,
-    @JsonKey(name: 'promoted_at') DateTime? promotedAt,
-    required int width,
-    required int height,
-    required String color,
-    @JsonKey(name: 'blue_hash') String? blueHash,
-    String? description,
-    @JsonKey(name: 'alt_description') String? altDescription,
-    required Urls urls,
-    required Links links,
-    required int likes,
-    required User user
-}) = Picture$;
+  const factory Picture(
+      {required String id,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
+      @JsonKey(name: 'updated_at') DateTime? updatedAt,
+      @JsonKey(name: 'promoted_at') DateTime? promotedAt,
+      required int width,
+      required int height,
+      required String color,
+      @JsonKey(name: 'blue_hash') String? blueHash,
+      String? description,
+      @JsonKey(name: 'alt_description') String? altDescription,
+      required Urls urls,
+      required Links links,
+      required int likes,
+      required User user}) = Picture$;
 
   factory Picture.fromJson(Map<dynamic, dynamic> json) => _$PictureFromJson(Map<String, dynamic>.from(json));
 }
 
 @freezed
 class Urls with _$Urls {
-  const factory Urls({
-    required String raw,
-    required String full,
-    required String regular,
-    required String small,
-    required String thumb,
-    @JsonKey(name: 'small_s3') required String smallS3
-}) = Urls$;
+  const factory Urls(
+      {required String raw,
+      required String full,
+      required String regular,
+      required String small,
+      required String thumb,
+      @JsonKey(name: 'small_s3') required String smallS3}) = Urls$;
 
   factory Urls.fromJson(Map<dynamic, dynamic> json) => _$UrlsFromJson(Map<String, dynamic>.from(json));
 }
@@ -46,20 +44,20 @@ class Links with _$Links {
     required String html,
     required String download,
     @JsonKey(name: 'download_location') required String downloadLocation,
-}) = Links$;
+  }) = Links$;
 
   factory Links.fromJson(Map<dynamic, dynamic> json) => _$LinksFromJson(Map<String, dynamic>.from(json));
 }
 
 @freezed
 class User with _$User {
-  const factory User ({
+  const factory User({
     required String id,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
     required String username,
     required String name,
     @JsonKey(name: 'profile_image') required UserProfileImages profileImages,
-}) = User$;
+  }) = User$;
 
   factory User.fromJson(Map<dynamic, dynamic> json) => _$UserFromJson(Map<String, dynamic>.from(json));
 }
