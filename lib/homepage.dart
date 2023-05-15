@@ -49,10 +49,9 @@ class _HomePageState extends State<HomePage> {
     final String query = search ?? _searchTerm;
     const String count = '28';
 
-    final Response response = await client.get(Uri.parse(
-        'https://api.unsplash.com/search/photos?'
-            'query=$query&client_id=$accessKey'
-            '&per_page=$count&page=$page'));
+    final Response response = await client.get(Uri.parse('https://api.unsplash.com/search/photos?'
+        'query=$query&client_id=$accessKey'
+        '&per_page=$count&page=$page'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -73,85 +72,84 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Photo recommendations'),
-        actions: <Widget>[
-          if (_isLoading && _page > 1)
-          const Center(
-            child: FittedBox(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: const CircularProgressIndicator(),
-              ),
-            ),
-          )
-        ],
-      ),
-      body: _isLoading && _page == 1 ?
-        const Center(
-          child: CircularProgressIndicator(),
-        ) : Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(child: TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  label: Text('Image theme...'),
-                  prefixIcon: Icon(Icons.search),
-                  prefixIconColor: Colors.lightBlue
-                ),
-              )),
-              TextButton(
-                  onPressed: () {
-                    _searchTerm = _searchController.text;
-                    _page = 1;
-                    if (_searchTerm.isEmpty) {
-                      _searchTerm = 'audi';
-                    }
-                    _getImages(search: _searchTerm, page: _page);
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
-                    foregroundColor: Colors.white
+        appBar: AppBar(
+          title: const Text('Photo recommendations'),
+          actions: <Widget>[
+            if (_isLoading && _page > 1)
+              const Center(
+                child: FittedBox(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
                   ),
-                  child: const Text('Search')
+                ),
               )
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(child: _photos.isNotEmpty ? GridView.builder(
-              controller: _scrollController,
-              itemCount: _photos.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-              itemBuilder: (BuildContext context, int index) {
-                final Picture picture = _photos[index];
-                return Stack(fit: StackFit.expand, children: <Widget>[
-                  GridTile(child: Image.network(picture.urls.regular, fit: BoxFit.cover)),
-                  Align(
-                      alignment: AlignmentDirectional.bottomEnd,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: AlignmentDirectional.bottomCenter,
-                                end: AlignmentDirectional.topCenter,
-                                colors: <Color>[Colors.black, Colors.transparent])),
-                        child: ListTile(
-                          title: Text(picture.user.name),
-                          trailing: CircleAvatar(
-                            backgroundImage: NetworkImage(picture.user.profileImages.medium),
+          ],
+        ),
+        body: _isLoading && _page == 1
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                          child: TextField(
+                        controller: _searchController,
+                        decoration: const InputDecoration(
+                            label: Text('Image theme...'),
+                            prefixIcon: Icon(Icons.search),
+                            prefixIconColor: Colors.lightBlue),
+                      )),
+                      TextButton(
+                          onPressed: () {
+                            _searchTerm = _searchController.text;
+                            _page = 1;
+                            if (_searchTerm.isEmpty) {
+                              _searchTerm = 'audi';
+                            }
+                            _getImages(search: _searchTerm, page: _page);
+                          },
+                          style: TextButton.styleFrom(backgroundColor: Colors.lightBlue, foregroundColor: Colors.white),
+                          child: const Text('Search'))
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: _photos.isNotEmpty
+                        ? GridView.builder(
+                            controller: _scrollController,
+                            itemCount: _photos.length,
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                            itemBuilder: (BuildContext context, int index) {
+                              final Picture picture = _photos[index];
+                              return Stack(fit: StackFit.expand, children: <Widget>[
+                                GridTile(child: Image.network(picture.urls.regular, fit: BoxFit.cover)),
+                                Align(
+                                    alignment: AlignmentDirectional.bottomEnd,
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                          gradient: LinearGradient(
+                                              begin: AlignmentDirectional.bottomCenter,
+                                              end: AlignmentDirectional.topCenter,
+                                              colors: <Color>[Colors.black, Colors.transparent])),
+                                      child: ListTile(
+                                        title: Text(picture.user.name),
+                                        trailing: CircleAvatar(
+                                          backgroundImage: NetworkImage(picture.user.profileImages.medium),
+                                        ),
+                                      ),
+                                    ))
+                              ]);
+                            })
+                        : const Center(
+                            child: CircularProgressIndicator(semanticsLabel: 'Loading photos...'),
                           ),
-                        ),
-                      ))
-                ]);
-              })
-              : const Center(
-            child: CircularProgressIndicator(semanticsLabel: 'Loading photos...'),
-          ),)
-        ],
-      )
-    );
+                  )
+                ],
+              ));
   }
 }
