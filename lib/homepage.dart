@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 
+import 'models/picture.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -13,7 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<String> _photos = <String>[];
+  final List<Picture> _photos = <Picture>[];
 
   @override
   void initState() {
@@ -22,25 +24,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _getImages() async {
+    final Client client = Client();
     final String accessKey = dotenv.env['UNSPLASH_API_KEY']!;
     const String query = 'audi';
     final Random rng = Random();
-    const String count = '16';
+    const String count = '28';
     final String page = rng.nextInt(50).toString();
 
-    final Response response = await get(Uri.parse(
+    final Response response = await client.get(Uri.parse(
         'https://api.unsplash.com/search/photos?query=$query&client_id=$accessKey&per_page=$count&page=$page'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
       final List<dynamic> results = data['results'] as List<dynamic>;
-      for (final dynamic element in results) {
-        final Map<String, dynamic> currentResult = element as Map<String, dynamic>;
-        final Map<String, dynamic> uriResult = currentResult['urls'] as Map<String, dynamic>;
-        _photos.add(uriResult['regular'] as String);
-      }
+
       setState(() {
-        // update list
+        _photos
+            .addAll(results.cast<Map<dynamic, dynamic>>().map((Map<dynamic, dynamic> json) => Picture.fromJson(json)));
       });
     }
   }
@@ -56,7 +56,25 @@ class _HomePageState extends State<HomePage> {
               itemCount: _photos.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
               itemBuilder: (BuildContext context, int index) {
-                return GridTile(child: Image.network(_photos[index], fit: BoxFit.cover));
+                final Picture picture = _photos[index];
+                return Stack(fit: StackFit.expand, children: <Widget>[
+                  GridTile(child: Image.network(picture.urls.regular, fit: BoxFit.cover)),
+                  Align(
+                      alignment: AlignmentDirectional.bottomEnd,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: AlignmentDirectional.bottomCenter,
+                                end: AlignmentDirectional.topCenter,
+                                colors: <Color>[Colors.black, Colors.transparent])),
+                        child: ListTile(
+                          title: Text(picture.user.name),
+                          trailing: CircleAvatar(
+                            backgroundImage: NetworkImage(picture.user.profileImages.medium),
+                          ),
+                        ),
+                      ))
+                ]);
               })
           : const Center(
               child: CircularProgressIndicator(semanticsLabel: 'Loading photos...'),
