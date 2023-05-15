@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   String _searchTerm = 'audi';
   int _page = 1;
   bool _isLoading = false;
-  bool _hasMore = false;
+  bool _hasMore = true;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
       final List<dynamic> results = data['results'] as List<dynamic>;
-      _hasMore = data['total_pages'] as int < _page;
+      _hasMore = data['total_pages'] as int > _page;
 
       setState(() {
         if (page == 1) {
